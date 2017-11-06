@@ -1,16 +1,15 @@
 <?php 
 // if (!defined('CONTROLADOR')) exit;
     define('CONTROLADOR', TRUE);
-
     require_once '../modelos/participante.php';
-    //echo "<p>vamos avanzando</p></br>";
     $participante = new Participante();
     $dni = (isset($_POST['Dni'])) ? $_REQUEST['Dni'] : null;
     $participante->setDni($dni);
-    //echo $participante->getDni();
-    //comensamoa a buscar los datos con el DNI
     if ($dni) {
         $participante = Participante::buscarPorDni($dni);
+		if (! $participante){ //verifica que si no encontrado un DNI regresa a su index
+			header('Location: \ulf');		
+		}
 		session_start();
 		$_SESSION['Dni'] = $participante->getDni($dni);
     }else{
@@ -18,25 +17,17 @@
     }
 //busca el estado del participante
     $codEstado = $participante->getEstado();
-//    echo $participante->getEstado();
     $estadopart = new Estados();
     $estadopart->setidEstado($codEstado);
-//    echo $estadopart->setidEstado($codEstado);
     if ($codEstado){
-//        echo $codEstado;
         $estadopart = Estados::buscarEstado($codEstado);
-//        echo $estadopart->getidEstado();
- //       echo $estadopart->getdescEstado();
-    }else{
-        echo "NO SE ENCUENTRA EL ESTADO";
     }
+
 //busca la zona del participante
     $zonapart= new Zonas;
     $zonapart->setidZonas($participante->getsector());
     if($participante->getsector()){
         $zonapart = Zonas::buscarZonas($participante->getsector());
-    }else{
-        echo "NO SE ENCONTRO LA ZONA DEL PARTICIPANTE";
     }
 
 ?>
@@ -51,37 +42,6 @@
         <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
         <meta name="viewport" content="width=device-width; initial-scale=1">
         <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="../css/jquery-ui.min.css">
-        <script src="../js/jquery.js"></script>
-        <script src="../js/jquery-ui.min.js"></script>
-        <script src="../js/datepicker-es.js"></script>
-        <script type="text/javascript">
-			//link de referencia http://www.hellogoogle.com/envio_datos_post_sin/
-			var form = document.createElement("form"); // crear un form
-			with(form) {
-			setAttribute("name", "myform"); //nombre del form
-			setAttribute("action", ""); // action por defecto
-			setAttribute("method", "post"); // method POST }
-
-			var input = document.createElement("input"); // Crea un elemento input
-			with(input) {
-			setAttribute("name", "theInput"); //nombre del input
-			setAttribute("type", "hidden"); // tipo hidden
-			setAttribute("value", ""); // valor por defecto
-			}
-
-			form.appendChild(input); // añade el input al formulario
-			document.getElementsByTagName("body")[0].appendChild(form); // añade el formulario al documento
-			window.onload=function(){
-			var my_links = document.getElementsByTagName("a");
-			for (var a = 0; a < my_links.length; a++) {
-			if (my_links[a].name=="post") my_links[a].onclick = function() {
-			document.myform.action=this.href;
-			document.myform.theInput.value=this.title;
-			document.myform.submit();
-			return false;}
-			}}
-		</script>
     </head>
     <body>
         <div class="wrapper">
@@ -131,14 +91,14 @@
                                 <span class="field">Nro DNI</span>
                                 <span class="field">Datos</span>
                                 <span class="field">Direcci&oacute;n</span>
-                                <span class="field">Estado</span>
+                                <span class="field">Prioridad</span>
                                 <span class="field">Sector</span>
                             </div>
                             <div class=""> 
                                 <span class="field"><?php echo $participante->getDni() ?></span>
                                 <span class="field"><?php echo utf8_encode($participante->getPaterno()) . " " . utf8_encode($participante->getMaterno()) . " " . utf8_encode($participante->getNombres()) ?></span>
                                 <span class="field"><?php echo utf8_encode($participante->getDireccion()) ?></span>
-                                <span class="field"><?php echo $estadopart->getdescEstado() ?></span>
+                                <span class="field"><?php echo $participante->getPrioridad() ?></span>
                                 <span class="field"><?php echo $zonapart->getdescZonas() ?></span>
                                 <span class="social-icons icon-circle icon-zoom list-unstyled list-inline"><a href="./estado_participante.php" ><i class="fa fa-pencil" ></i></a></span>
                             </div>
@@ -177,18 +137,4 @@
             </div>
         </footer>    
     </body>
-    <!-- scrip que llama a la formacion del calendario ademas aqui damos las caracteristicas del calendario -->
-    <script>
-        $("#fecha1").datepicker({
-            changeMonth:true,   /*activa el selector de mes*/
-            changeYear:true,    /*activa el selector de año*/
-            showOn: "button",   /*activa el boton que activa el calendario*/
-            buttonImage: "./images/calendar.gif", /*Muestra la imagen que representará al boton de calendario*/
-            buttonImageOnly:true,
-            showButtonPanel:true,
-        });
-    </script>
-<!--contraseña: nathalyo-->
-<!--   sotfware y sistemas del peru 20567230300-->
-    <!--#http://www.htmlquick.com/es/-->
 </html>

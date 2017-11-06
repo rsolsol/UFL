@@ -13,14 +13,15 @@ class Participante {
     private $nombres;
     private $direccion;
     private $sexo;
+    private $prioridad;
     private $fechaNac;
     private $estado;
     private $sector;
     private $fechaEmpadrono;
     
-    const TABLA = 'enpadronados';
+    const TABLA = 'empadronados';
     
-    public function __construct($id = null, $nroDni = null, $apelPaterno = null, $apelMaterno = null, $nombres = null, $direccion = null, $sexo = null, $fechaNac = null, $estado = null, $sector = null, $fechaEmpadrono = null){
+    public function __construct($id = null, $nroDni = null, $apelPaterno = null, $apelMaterno = null, $nombres = null, $direccion = null, $sexo = null, $prioridad = null, $fechaNac = null, $estado = null, $sector = null, $fechaEmpadrono = null){
         $this->id = $id;
         $this->nroDni = $nroDni;
         $this->apelPaterno = $apelPaterno;
@@ -28,6 +29,7 @@ class Participante {
         $this->nombres = $nombres;
         $this->direccion = $direccion;
         $this->sexo = $sexo;
+		$this->prioridad = $prioridad;
         $this->fechaNac = $fechaNac;
         $this->estado = $estado;
         $this->sector = $sector;
@@ -54,6 +56,9 @@ class Participante {
     public function getsexo() {
         return $this->sexo;
     }
+    public function getPrioridad() {
+        return $this->prioridad;
+    }
     public function getFnac() {
         return $this->fechaNac;
     }
@@ -74,6 +79,7 @@ class Participante {
     public function setNombres($nombres) {$this->nombres = $nombres;}
     public function setDireccion($direccion) {$this->direccion = $direccion;}
     public function setsexo($sexo) {$this->sexo = $sexo;}
+    public function setprioridad($prioridad) {$this->prioridad = $prioridad;}
     public function setFnac($fechaNac) {$this->fechaNac = $fechaNac;}
     public function setEstado($estado) {$this->estado = $estado;}
     public function setsector($sector) {$this->sector = $sector;}
@@ -106,22 +112,19 @@ class Participante {
         $conexion = null;
     }
     public function buscarPorDni($nroDni) {
-//        echo "estoy dentro del buscar por ID";
-//    echo $nroDni. "</br>";
 
         $conexion = new Conexion();
-        $consulta = $conexion->prepare('SELECT Id, nroDni, apelPaterno, apelMaterno, nombres, direccion, sexo, fechaNac, estado, sector, fechaEmpadrono FROM ' . self::TABLA . ' WHERE nroDni = :nroDni');
+        $consulta = $conexion->prepare('SELECT Id, nroDni, apelPaterno, apelMaterno, nombres, direccion, sexo, prioridad, fechaNac, estado, sector, fechaEmpadrono FROM ' . self::TABLA . ' WHERE nroDni = :nroDni');
         $consulta->bindParam(':nroDni', $nroDni);
         $consulta->execute();
         $registro = $consulta->fetch();
         $conexion = null;
         if ($registro){
-            return new self($registro['Id'],$registro['nroDni'], $registro['apelPaterno'], $registro['apelMaterno'], $registro['nombres'], $registro['direccion'], $registro['sexo'], $registro['fechaNac'], $registro['estado'],
+            return new self($registro['Id'],$registro['nroDni'], $registro['apelPaterno'], $registro['apelMaterno'], $registro['nombres'], $registro['direccion'], $registro['sexo'], $registro['prioridad'], $registro['fechaNac'], $registro['estado'],
             $registro['sector'], $registro['fechaEmpadrono'], $nroDni);
         }else {
             return false;
         }
-//        echo $registro['nombres'];
     }
 
 }
@@ -151,9 +154,7 @@ class Estados {
         return $regEstados;
     }
    public function buscarEstado($idEstado) {
-//    echo "estoy dentro del buscar por ID";
        $conexion = new Conexion();
-  //     echo $idEstado;
        $consulta = $conexion->prepare('SELECT id_estado, des_estado FROM estado_participante WHERE id_estado = :idEstado');
        $consulta->bindParam(':idEstado', $idEstado);
        $consulta->execute();
